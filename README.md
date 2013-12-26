@@ -1,78 +1,119 @@
-# memo
 
-## 2013-11-07
+PhoneGap (Apache Cordova 3) でiOS Appの作成
+============
 
-<pre>
-layout_territory_new.js
-ブリック一覧まで実装
-    選択処理が中途半端な状態
+はじめに
+--------
 
-各グリッドで保持しているposition_cdはtms.territoryに移したほうが良いかも
-    各グリッド選択処理実装時に考慮すること
+PhoneGapこと、Apache Cordova (以降、単に"cordova"とします)
+を使って、iOS7向けのアプリケーションを開発していきます。
 
-各storeの定義について確認する
+まずは、HelloWorldアプリを作って開発手順を確認してみます。
 
-LockingColumnModelの定義について、空配列の指定が必要か。
-</pre>
+### 開発環境について
 
-## 2013-11-08
-<pre>
-layout_mente.js
-タブ名称変更
-</pre>
+以下の開発環境で作業したログをまとめています。
 
-[複合機からの情報漏洩でメーカーが注意喚起、「メーカーの対応に問題も」と専門家](http://itpro.nikkeibp.co.jp/article/NEWS/20131107/516617/)
+- MacOS X (10.8)
+- Xcode5.4 (含むCommand-Line Tools)
+- Node.js (v0.10.24)
+- Apache Cordova v3.3.0
 
-メーカーの責任か？
-
-推測だけど、IT運用業務を請け負っている業者が
-自社からトナー残量とかエラーなんかをトラップするためにファイアウォールに意図的に穴を開けてたんじゃないかなぁ。
-僕が運用担当だったらそうするもの。
+nodeは既にインストールしてある前提です。
+それ以外の開発ツールについては、手順の中でインストールしていくかもしれません。
 
 
-複合機に組み込まれているWebサーバーに脆弱性が～、っていう問題もあるけど
-([［2］複合機が丸見えになる恐れ](http://itpro.nikkeibp.co.jp/article/COLUMN/20120220/382087/?r_security))、
-これって複合機に限った話じゃないし。
+### 参考
 
-そもそも、複合機をLANに接続したら外部から閲覧可能になってしまうなんて
-ネットワーク設定に明らかに問題があるでしょ。
+以下のDocumentを参考に、必要最小限の箇所を抜粋しています。
+詳細は下記のリンク先を参照ください。
 
-きちんとファイアウォールなんかを用意して
-外に公開するもの・しないものを管理する、ってのは、複合機を作るメーカーの範疇じゃないでしょ。
-使う側がリスクを認識して設定すべきで、
-僕が見たことある複合機の管理者向けマニュアルには、そういった旨の警告が記載されてたと思う。
+- [Apache Cordova](http://cordova.apache.org/)
+- [Apache Cordova Documentation](http://cordova.apache.org/docs/en/3.3.0/)
 
+PhoneGapとApache Cordovaの関係については
+以下のTech Crunchの記事がわかりやすいです。
 
-内蔵のWebサーバーなんかに脆弱性があるのなら、パッチなんかはメーカーから提供すべきだけど、
-自前のネットワークも管理できない組織が
-複合機のファームウェアアップデートとか管理できるとは思えないし。
-
-パッチ提供がメーカーの義務って言われると、メーカーとしては
-アップデートが必要になるような機能は極力実装しないか
-アップデート対応費用を価格に転嫁せざるを得ないよね。
-
-デフォルトでセキュリティをガッチガチにしてしまうと、「使い勝手が悪い」とか言われるだろうし。
+- [AdobeがApache Cordovaの私家版PhoneGapの3.0をリリース, APIをプラグイン化してより身軽に](http://jp.techcrunch.com/2013/07/20/20130719adobe-launches-phonegap-3-0-with-new-plug-in-architecture-apis-and-better-tools/)
 
 
-こんな形で製造者に過度な責任を負担させるからイノベーションが起きないんだよ。
-便利な機能を実装したらこれまで想定していなかった余計なリスクが発生してしまうなら、
-これまでの延長線上でモノを作ろうってなる。
+PhoneGap のインストール
+---------------------
+
+npmでインストールします。超簡単!
+
+```sh
+sudo npm install -g cordova
+```
+
+これで、cordovaコマンドが使用できるはず。
+
+! バージョン確認すること !
 
 
-まぁ、責任の適切なバランスがどこにあるのか、っていうのは非常に難しい問題だけど。
+Project の作成
+---------------------
 
-------
+[iOS Platform Guide](http://cordova.apache.org/docs/en/3.3.0/guide_platforms_ios_index.md.html)
 
-## 来期年月と来月年月が一致している場合
 
-- 策定モードの場合：来期組織アライメントのみ表示
-- メンテナンスモードの場合：来月アライメントを表示し、今月のみ選択できるようにする
-- 閲覧モードの場合：来月アライメントを通常通り表示する
+`create`オプションでプロジェクトを作成する模様。
 
-## モード変更について
+```sh
+cordova create hello edu.example.hello HelloWorld
+```
 
-- 詳細設定フォームを追加
-  - 年月を指定して来期データを作成する
-- 不要データ削除機能を追加
+引数の説明は以下のとおり。
+
+- hello : directory名
+- edu.self.hello : アプリを識別するidentifier  
+ドメイン名を逆にしたもの。今回は公開しないので、適当な名前を設定。
+- HelloWorld : アプリ名
+
+カレントディレクトリの下に`hello`ディレクトリが作成されています。
+つづいて、iOS Appに必要なSDK等のセットアップを行います。
+
+```sh
+cd hello
+cordova platform add ios
+cordovaa prepare
+```
+
+`hello/platforms/ios/hello.xcodeproj`というファイルが
+生成されているはずなので、XCodeで開いてみます。
+
+あとは、通常のiOS App開発時と同じようにRunしてやれば、
+シミュレータでの実行や実機への展開ができるはず。
+
+この時、Xcode左側のツリーで`.xcodeproj`のファイルを選択する必要があります。
+`.xcodeproj`と同じ階層に`www`という
+htmlやjavascriptを配置するディレクトリが生成されていますが、
+そのディレクトリを選択するのでは無いので注意すること。
+
+
+index.htmlの修正
+--------------------
+
+実際の開発では、`hello/www`ディレクトリ以下に
+必要なファイルを配置等していくことになります。
+
+とりあえず、`index.html`を編集してみます。
+
+```html
+<!doctype html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>HelloWorld</title>
+</head>
+<body>
+    <h1>Hello, World!</h1>
+    <p>こんにちは、こんにちは！</p>
+</body>
+</html>
+```
+
+で、Xcodeに戻ってRunしてみます。
+
 
 
