@@ -1,4 +1,3 @@
-
 PhoneGap (Apache Cordova 3) でiOS Appの作成
 ============
 
@@ -116,4 +115,168 @@ index.htmlの修正
 で、Xcodeに戻ってRunしてみます。
 
 
+
+-------------------------
+
+
+勤怠管理アプリの開発
+====================
+
+Apache Cordovaを使って、前に作ったiOSアプリのバージョンアップ版を開発してみることにします。
+
+簡単な仕様は以下の通り。
+
+- 毎日の出勤・退勤時間を記録する
+- 事前に設定された休憩時間を差し引いて、勤務時間を自動的に算出する
+- 入力された時間をアプリ内で保存する (外部データ送信は行わない)
+- 月ごとに出勤・退勤時間をリスト表示する
+- 月ごとに出勤・退勤時間をPDF,CSV形式でエクスポートする
+
+- SinglePageApplication (HTMLはひとつ)
+- JS: backbone.js (jQuery, underscore)
+- CSS: Bootstrap
+
+まぁ、ベーシックなWebアプリケーションですね。
+
+まずはiPhoneを対象に作っていきます。
+(余裕があれば最後にiPad対応を...)
+
+
+プロジェクトの作成
+--------------------
+
+Cordovaで器となるプロジェクトを作成します。
+
+```sh
+cordova create timemanager com.kimura-kazunori.SimpleTimeManager SimpleTimeManager
+```
+
+前に公開したアプリが`TimeManager`だったので、被らないように頭に`Simple`と付けました。
+これから作成するアプリを公開するかどうか分かりませんが。
+
+とりあえず、iOSアプリとしてセットアップしておきます。
+
+```sh
+cd timemanager
+cordova platform add ios
+cordovaa prepare
+```
+
+以下の様なフォルダ構成になっています。
+
+    timemanager
+      `- www
+          |- js
+          |
+          |- css
+          |     
+          `- img
+                
+          index.html
+
+
+まだ何も変更していませんが、とりあえずgitで管理するようにlocal repositoryを作りました。
+.gitignoreを編集して、www以外のCordovaが生成したファイルは管理対象外にしておきます。
+
+`.gitignore`
+
+```sh
+$ pwd
+/workspace/timemanager
+$ git init
+$ git add .
+$ git commit -m "first commit."
+```
+
+
+Webアプリケーション版の作成
+---------------------
+
+とりあえずCordovaの事は考えず、PCのブラウザ上で動作するWebアプリケーションとして作っていきます。
+(このアプローチが正しいかどうか分かりません。最初からCordovaを想定して作るべきなのかも...)
+
+実はbackbone.jsを使うのも初めてなので、作りながら細かい設計を詰めていきます。
+
+
+開発環境の設定
+--------------------
+
+ライブラリ管理のために`bower`、テストのために`connect`を使います。
+また、後でjsやcssの結合等を行うため、`grunt`も入れておきます。
+
+node大活躍ですね。
+
+```sh
+$ sudo npm install -g bower
+$ sudo npm install -g grunt-cli
+
+$ npm init
+:
+$ npm install connect --save-dev
+$ npm install grunt --save-dev
+```
+
+gruntの設定はある程度アプリケーションの形が見えてから設定します。
+gruntのプラグインなども後回し。
+
+
+### connectの設定
+
+`connect`はnodeで稼働する簡易なHTTPサーバーです。
+`www`ディレクトリを公開し、`http://localhost:3000`で接続できるようにします。
+
+```js
+//index.js
+var connect = require("connect"),
+    path = require("path");
+connect.createServer(
+    connect.static(path.join(__dirname, "www"))
+).listen(3000);
+```
+
+### bowerの設定
+
+[bower](http://bower.io/)はTwitterが作ったパッケージマネージャです。
+フロントエンドのライブラリ管理に使用されます。
+
+参考: [Bower入門(基礎編)](http://yosuke-furukawa.hatenablog.com/entry/2013/06/01/173308)
+
+まず、bowerの初期設定を行います。
+
+```sh
+$ bower init
+```
+
+つづいて、ダウンロードしたライブラリの保存先を設定します。
+
+```sh
+$ mkdir www/vendor/assets/components
+$ vim .bowerrc
+```
+
+```json
+//bower.json
+{
+    "directory": "www/vendor/assets/components",
+    "json": "bower.json"
+}
+```
+
+### bowerでライブラリをダウンロード
+
+必要なライブラリをダウンロードしていきます。
+
+```sh
+$ bower install jquery --save
+$ bower install underscore --save
+$ bower install backbone --save
+$ bower install bootstrap --save
+```
+
+`www/vendor`を`.gitignore`に追加して
+バージョン管理の対象外にしておきます。
+
+
+これで、とりあえず開発に着手できる環境が整いました。
+次は、アプリケーションの設計を行っていきます。
 
