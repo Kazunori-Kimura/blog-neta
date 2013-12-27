@@ -280,3 +280,55 @@ $ bower install bootstrap --save
 これで、とりあえず開発に着手できる環境が整いました。
 次は、アプリケーションの設計を行っていきます。
 
+
+-------------------------------
+
+アプリケーション設計
+=================
+
+画面設計
+----------
+
+基本的な画面は4つ
+
+- 出勤・退勤画面 (main)
+- 月間作業実績画面 (list)
+- 出退勤修正画面 (edit)
+- 設定画面 (config)
+
+
+SinglePageApplicationの予定なので、
+index.htmlに詰め込んでしまいます。
+
+
+データ設計
+-----------
+
+入力されたデータはWebStorage(localStorage)に保存します。
+
+```js
+//出退勤データ
+localStorage["date-yyyy-MM"] = JSON.stringify(
+    {
+        "dd" :
+            {
+                "start": {Date},    //出勤
+                "end": {Date},      //退勤
+                "rest": {Number},   //休憩時間
+                "comment": {String} //コメント
+            },
+        "dd" : {} ...
+    }
+);
+
+//設定
+localStorage["setting"] = JSON.stringify(
+    {
+        "user_name": {string},    //氏名 (PDFで使用)
+        "project_name": {string}, //案件名 (PDFで使用)
+        "project_owner": {string},//顧客名 (PDFで使用)
+        "tel": {string},          //連絡先 (PDFで使用)
+        "rest": {Number}          //基準休憩時間
+    }
+);
+```
