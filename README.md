@@ -164,15 +164,40 @@ cordovaa prepare
 
 以下の様なフォルダ構成になっています。
 
-    timemanager
-      `- www
-          |- js
-          |
-          |- css
-          |     
-          `- img
-                
-          index.html
+```sh
+$ cd workspace/timemanager/
+$ tree
+.
+├── merges
+│   └── ios
+├── platforms
+│   └── ios
+│       ├── CordovaLib
+│       ├── EasyTimeManager
+│       │   ├── Classes
+│       │   ├── EasyTimeManager-Info.plist
+│       │   ├── EasyTimeManager-Prefix.pch
+│       │   ├── Plugins
+│       │   ├── Resources
+│       │   ├── config.xml
+│       │   └── main.m
+│       ├── EasyTimeManager.xcodeproj
+│       │   └── project.pbxproj
+│       ├── cordova
+│       ├── platform_www
+│       └── www
+├── plugins
+│   └── ios.json
+└── www
+    ├── config.xml
+    ├── css
+    │   └── index.css
+    ├── img
+    │   └── logo.png
+    ├── index.html
+    └── js
+        └── index.js
+```
 
 
 まだ何も変更していませんが、とりあえずgitで管理するようにlocal repositoryを作りました。
