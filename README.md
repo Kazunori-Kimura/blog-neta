@@ -279,8 +279,9 @@ $ mkdir www/vendor/assets/components
 $ vim .bowerrc
 ```
 
+`//.bowerrc`
+
 ```json
-//.bowerrc
 {
     "directory": "www/vendor/assets/components",
     "json": "bower.json"
