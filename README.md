@@ -280,7 +280,7 @@ $ vim .bowerrc
 ```
 
 ```json
-//bower.json
+//.bowerrc
 {
     "directory": "www/vendor/assets/components",
     "json": "bower.json"
