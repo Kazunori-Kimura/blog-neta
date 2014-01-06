@@ -295,6 +295,7 @@ $ vim .bowerrc
 ```sh
 $ bower install jquery --save
 $ bower install underscore --save
+$ bower install json2 --save
 $ bower install backbone --save
 $ bower install bootstrap --save
 ```
