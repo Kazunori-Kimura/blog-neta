@@ -10,9 +10,16 @@ OpenGLをJavaScriptで使いたい → canvas & WebGL
 
 > WebGL は、HTMLの canvas 内で 3D レンダリングを実行するために、Web コンテンツで OpenGL ES 2.0 に基づく API を使用することを可能にします。
 
+
+### MMD
+
 - [MMD.js](https://github.com/edvakf/MMD.js)
 
 MMDをWebGLで動かす
+
+- [How to convert MMD files to JSON for three.js](http://yomotsu.net/blog/2014/02/19/convert-mmd-for-threejs.html)
+
+MMDをJsonに変換
 
 
 ### three.js
